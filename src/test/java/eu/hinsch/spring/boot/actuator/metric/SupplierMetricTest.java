@@ -12,34 +12,48 @@ import static org.junit.Assert.assertThat;
  */
 public class SupplierMetricTest extends AbstractMetricTest {
 
-    protected SupplierMetric<String> testExecutor;
+    protected SupplierMetric<String> testExecutorWithLogger;
+    protected SupplierMetric<String> testExecutorWithoutLogger;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        testExecutor = executionMetricFactory.supplierMetric("testExecutor", logger);
+        testExecutorWithLogger = executionMetricFactory.supplierMetric("testExecutor", logger);
+        testExecutorWithoutLogger = executionMetricFactory.supplierMetric("testExecutor");
     }
 
     @Test
     public void shouldMeasureRuntime() {
         // when
-        String value = testExecutor.measure(() -> getValue(50));
+        String value = testExecutorWithLogger.measure(() -> getValue(50));
 
         // then
         assertThat(value, is("TEST50"));
         assertMeasurements(50.0, 50.0, 50.0, 50.0, 1);
+        assertLogger(1);
     }
 
     @Test
     public void shouldMeasureMultipleRuntimes() {
         // when
-        testExecutor.measure(() -> getValue(50));
-        testExecutor.measure(() -> getValue(20));
-        testExecutor.measure(() -> getValue(30));
-        testExecutor.measure(() -> getValue(40));
+        testExecutorWithLogger.measure(() -> getValue(50));
+        testExecutorWithLogger.measure(() -> getValue(20));
+        testExecutorWithLogger.measure(() -> getValue(30));
+        testExecutorWithLogger.measure(() -> getValue(40));
 
         // then
         assertMeasurements(40.0, 35, 20.0, 50.0, 4);
+        assertLogger(4);
+    }
+
+    @Test
+    public void shouldMeasureRuntimeWithoutLogger() {
+        // when
+        String value = testExecutorWithoutLogger.measure(() -> getValue(50));
+
+        // then
+        assertThat(value, is("TEST50"));
+        assertMeasurements(50.0, 50.0, 50.0, 50.0, 1);
     }
 
     private String getValue(int ms) {

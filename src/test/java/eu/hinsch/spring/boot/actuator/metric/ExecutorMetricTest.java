@@ -9,34 +9,46 @@ import org.mockito.MockitoAnnotations;
  */
 public class ExecutorMetricTest extends AbstractMetricTest {
 
-    protected ExecutorMetric testExecutor;
+    protected ExecutorMetric testExecutorWithLogger;
+    protected ExecutorMetric testExecutorWithoutLogger;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        testExecutor = executionMetricFactory.executorMetric("testExecutor", logger);
+        testExecutorWithLogger = executionMetricFactory.executorMetric("testExecutor", logger);
+        testExecutorWithoutLogger = executionMetricFactory.executorMetric("testExecutor");
     }
 
     @Test
     public void shouldMeasureRuntime() {
         // when
-        testExecutor.measure(() -> sleep(50));
+        testExecutorWithLogger.measure(() -> sleep(50));
 
         // then
         assertMeasurements(50.0, 50.0, 50.0, 50.0, 1);
+        assertLogger(1);
     }
 
     @Test
     public void shouldMeasureMultipleRuntimes() {
         // when
-        testExecutor.measure(() -> sleep(50));
-        testExecutor.measure(() -> sleep(20));
-        testExecutor.measure(() -> sleep(30));
-        testExecutor.measure(() -> sleep(40));
+        testExecutorWithLogger.measure(() -> sleep(50));
+        testExecutorWithLogger.measure(() -> sleep(20));
+        testExecutorWithLogger.measure(() -> sleep(30));
+        testExecutorWithLogger.measure(() -> sleep(40));
 
         // then
         assertMeasurements(40.0, 35, 20.0, 50.0, 4);
+        assertLogger(4);
+    }
 
+    @Test
+    public void shouldMeasureRuntimeWithoutLogger() {
+        // when
+        testExecutorWithoutLogger.measure(() -> sleep(50));
+
+        // then
+        assertMeasurements(50.0, 50.0, 50.0, 50.0, 1);
     }
 
 }

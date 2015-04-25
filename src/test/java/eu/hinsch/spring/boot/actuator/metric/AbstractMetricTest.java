@@ -62,7 +62,9 @@ public abstract class AbstractMetricTest {
 
         verify(gaugeService, times(invocations)).submit(eq("testExecutor.max"), maxCaptor.capture());
         assertThat(maxCaptor.getValue(), both(greaterThanOrEqualTo(max)).and(lessThan(max + MAX_OVERHEAD)));
+    }
 
+    protected void assertLogger(int invocations) {
         verify(logger, times(invocations)).debug(eq("Executing {} took {}ms"), eq("testExecutor"), anyLong());
     }
 
