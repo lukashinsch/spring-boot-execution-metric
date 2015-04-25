@@ -25,17 +25,19 @@ compile 'eu.hinsch:spring-boot-execution-metric:0.1.0'
 ```
 
 ```
+// configuration
 @Bean
 public ExecutionMetricFactory executionMetricFactory(CounterService gaugeService, GaugeService counterService) {
     return new ExecutionMetricFactory(gaugeService, counterService);
 }
 
-//...
+// ...
 
 ExecutorMetric executorMetric = executionMetricFactory.executorMetric("test1", logger);
-executorMetric.measure(() -> someAction(...));
-
 SupplierMetric supplierMetric = executionMetricFactory.supplierMetric("test2", logger);
+
+// use
+executorMetric.measure(() -> someAction(...));
 SomeValue myValue = supplierMetric.measure(() -> getSomeValue());
    
 ```
