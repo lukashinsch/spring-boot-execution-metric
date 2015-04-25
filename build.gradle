@@ -1,25 +1,27 @@
 buildscript {
-    ext {
-        springBootVersion = '1.2.3.RELEASE'
-    }
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
-        classpath("io.spring.gradle:dependency-management-plugin:0.5.0.RELEASE")
+        classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1")
     }
 }
 
+ext {
+    springBootVersion = '1.2.3.RELEASE'
+}
+
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea' 
-apply plugin: 'spring-boot'
-apply plugin: 'io.spring.dependency-management'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+version = '0.1.0'
+group = 'eu.hinsch'
 
 jar {
     baseName = 'spring-boot-execution-metric'
-    version = '0.0.1-SNAPSHOT'
+    version = project.version
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -30,19 +32,94 @@ repositories {
 
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    compile("org.springframework.boot:spring-boot-starter-web")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 
 
-eclipse {
-    classpath {
-         containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
-         containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "full" // show assertion errors in build
     }
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
+}
+
+if (System.getenv('CI') != 'true') {
+
+    apply plugin: 'signing'
+    apply plugin: 'maven'
+
+    group = 'eu.hinsch'
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from tasks.javadoc.destinationDir
+    }
+
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
+
+    artifacts {
+        archives jar
+        archives javadocJar
+        archives sourcesJar
+    }
+
+    signing {
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+
+                pom.project {
+                    name 'spring-boot-execution-metric'
+                    packaging 'jar'
+                    description 'Measure execution times of critical code blocks and expose statistics as actuator metrics'
+                    url 'https://github.com/lukashinsch/spring-boot-execution-metric/'
+
+                    scm {
+                        url 'scm:git@github.com:lukashinsch/spring-boot-execution-metric.git'
+                        connection 'scm:git@github.com:lukashinsch/spring-boot-execution-metric.git'
+                        developerConnection 'scm:git@github.com:lukashinsch/spring-boot-execution-metric.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'MIT License'
+                            url 'http://www.opensource.org/licenses/mit-license.php'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'lukashinsch'
+                            name 'Lukas Hinsch'
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
