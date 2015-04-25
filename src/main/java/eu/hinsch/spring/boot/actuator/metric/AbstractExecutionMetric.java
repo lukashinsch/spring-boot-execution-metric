@@ -14,11 +14,7 @@ public abstract class AbstractExecutionMetric {
     private final CounterService counterService;
     protected final String name;
     private final Logger logger;
-
-    private long count;
-    private double average;
-    private long max;
-    private long min;
+    private Histogram histogram;
 
     public AbstractExecutionMetric(GaugeService gaugeService, CounterService counterService, String name) {
         this(gaugeService, counterService, name, null);
@@ -29,26 +25,15 @@ public abstract class AbstractExecutionMetric {
         this.counterService = counterService;
         this.name = name;
         this.logger = logger;
+        this.histogram = new Histogram();
     }
 
-    protected synchronized void submit(final long duration) {
-        updateValues(duration);
-        gaugeService.submit(name + ".last", duration);
-        gaugeService.submit(name + ".average", Double.valueOf(average).longValue());
-        gaugeService.submit(name + ".max", max);
-        gaugeService.submit(name + ".min", min);
-        counterService.increment(name);
+    protected StopWatch start() {
+        final StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        return stopWatch;
     }
 
-    // TODO polish...
-    private void updateValues(final long duration) {
-        average = (average * count + duration) / (count + 1);
-        count++;
-        max = Math.max(max, duration);
-
-        // TODO this will ignore measurement of 0 as min
-        min = min > 0 ? Math.min(min, duration) : duration;
-    }
 
     protected void finish(final StopWatch stopWatch) {
         stopWatch.stop();
@@ -59,9 +44,12 @@ public abstract class AbstractExecutionMetric {
         submit(duration);
     }
 
-    protected StopWatch start() {
-        final StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        return stopWatch;
+    protected synchronized void submit(final long duration) {
+        histogram.addValue(duration);
+        gaugeService.submit(name + ".last", duration);
+        gaugeService.submit(name + ".average", Double.valueOf(histogram.getAverage()).longValue());
+        gaugeService.submit(name + ".max", histogram.getMax());
+        gaugeService.submit(name + ".min", histogram.getMin());
+        counterService.increment(name);
     }
 }

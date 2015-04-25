@@ -4,12 +4,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
-import org.springframework.stereotype.Component;
 
 /**
  * Created by lh on 23/04/15.
  */
-@Component
 public class ExecutionMetricFactory {
 
     private final CounterService counterService;
