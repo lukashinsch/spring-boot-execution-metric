@@ -31,12 +31,12 @@ public ExecutionMetricFactory executionMetricFactory(CounterService gaugeService
     return new ExecutionMetricFactory(gaugeService, counterService);
 }
 
-// ...
+// setup metric stores (once during config)
 
 ExecutorMetric executorMetric = executionMetricFactory.executorMetric("test1", logger);
 SupplierMetric supplierMetric = executionMetricFactory.supplierMetric("test2", logger);
 
-// use
+// use (on every call)
 executorMetric.measure(() -> someAction(...));
 SomeValue myValue = supplierMetric.measure(() -> getSomeValue());
    
