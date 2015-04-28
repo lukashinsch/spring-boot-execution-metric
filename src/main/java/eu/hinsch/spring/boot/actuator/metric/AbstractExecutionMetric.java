@@ -3,6 +3,7 @@ package eu.hinsch.spring.boot.actuator.metric;
 import org.slf4j.Logger;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.util.StopWatch;
 
 /**
@@ -14,18 +15,31 @@ public abstract class AbstractExecutionMetric {
     private final CounterService counterService;
     protected final String name;
     private final Logger logger;
+    private LogLevel logLevel;
     private Histogram histogram;
 
     public AbstractExecutionMetric(GaugeService gaugeService, CounterService counterService, String name) {
         this(gaugeService, counterService, name, null);
     }
 
-    public AbstractExecutionMetric(GaugeService gaugeService, CounterService counterService, String name, Logger logger) {
+    public AbstractExecutionMetric(GaugeService gaugeService,
+                                   CounterService counterService,
+                                   String name,
+                                   Logger logger,
+                                   LogLevel logLevel) {
         this.gaugeService = gaugeService;
         this.counterService = counterService;
         this.name = name;
         this.logger = logger;
+        this.logLevel = logLevel;
         this.histogram = new Histogram();
+    }
+
+    public AbstractExecutionMetric(GaugeService gaugeService,
+                                   CounterService counterService,
+                                   String name,
+                                   Logger logger) {
+        this(gaugeService, counterService, name, logger, LogLevel.OFF);
     }
 
     protected StopWatch start() {
@@ -38,8 +52,27 @@ public abstract class AbstractExecutionMetric {
     protected void finish(final StopWatch stopWatch) {
         stopWatch.stop();
         final long duration = stopWatch.getLastTaskTimeMillis();
-        if (logger != null) {
-            logger.debug("Executing {} took {}ms", name, duration);
+        if (logger != null && logLevel != LogLevel.OFF) {
+            String msg = "Executing {} took {}ms";
+            switch (logLevel) {
+                case TRACE:
+                    logger.trace(msg, name, duration);
+                    break;
+                case DEBUG:
+                    logger.debug(msg, name, duration);
+                    break;
+                case INFO:
+                    logger.info(msg, name, duration);
+                    break;
+                case WARN:
+                    logger.warn(msg, name, duration);
+                    break;
+                case ERROR:
+                    logger.error(msg, name, duration);
+                    break;
+                default:
+                    throw new RuntimeException("unsupported loglevel: " + logLevel);
+            }
         }
         submit(duration);
     }

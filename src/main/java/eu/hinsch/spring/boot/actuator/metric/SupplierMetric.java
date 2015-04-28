@@ -3,6 +3,7 @@ package eu.hinsch.spring.boot.actuator.metric;
 import org.slf4j.Logger;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.util.StopWatch;
 
 import java.util.function.Supplier;
@@ -22,6 +23,14 @@ public class SupplierMetric<T> extends AbstractExecutionMetric {
                           final String name,
                           final Logger logger) {
         super(gaugeService, counterService, name, logger);
+    }
+
+    public SupplierMetric(GaugeService gaugeService,
+                          CounterService counterService,
+                          String name,
+                          Logger logger,
+                          LogLevel logLevel) {
+        super(gaugeService, counterService, name, logger, logLevel);
     }
 
     public T measure(Supplier<T> supplier) {
