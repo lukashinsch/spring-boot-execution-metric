@@ -15,14 +15,36 @@ Maven
 <dependency>
     <groupId>eu.hinsch</groupId>
     <artifactId>spring-boot-execution-metric</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
 Gradle
 ```groovy
-compile 'eu.hinsch:spring-boot-execution-metric:0.1.0'
+compile 'eu.hinsch:spring-boot-execution-metric:0.1.1'
 ```
+
+### Use with AOP / Annotations
+
+Expose metric only
+
+```
+@DurationMetric("some-action")
+public void someAction() {
+    // ...
+}
+```
+
+With logging
+
+```
+@DurationMetric(value = "some-action", LogLevel = LogLevel.DEBUG)
+public void someAction() {
+    // ...
+}
+```
+
+### Programatic invocation
 
 ```
 // configuration
