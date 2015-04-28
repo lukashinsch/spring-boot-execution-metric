@@ -3,6 +3,7 @@ package eu.hinsch.spring.boot.actuator.metric;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.logging.LogLevel;
 
 /**
  * Created by lh on 25/04/15.
@@ -15,7 +16,7 @@ public class ExecutorMetricTest extends AbstractMetricTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        testExecutorWithLogger = executionMetricFactory.executorMetric("testExecutor", logger);
+        testExecutorWithLogger = executionMetricFactory.executorMetric("testExecutor", logger, LogLevel.INFO);
         testExecutorWithoutLogger = executionMetricFactory.executorMetric("testExecutor");
     }
 

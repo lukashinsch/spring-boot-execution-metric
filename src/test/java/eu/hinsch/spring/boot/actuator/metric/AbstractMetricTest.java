@@ -65,7 +65,7 @@ public abstract class AbstractMetricTest {
     }
 
     protected void assertLogger(int invocations) {
-        verify(logger, times(invocations)).debug(eq("Executing {} took {}ms"), eq("testExecutor"), anyLong());
+        verify(logger, times(invocations)).info(eq("Executing {} took {}ms"), eq("testExecutor"), anyLong());
     }
 
     protected void sleep(int ms) {
