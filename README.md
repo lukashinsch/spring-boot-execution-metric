@@ -15,13 +15,13 @@ Maven
 <dependency>
     <groupId>eu.hinsch</groupId>
     <artifactId>spring-boot-execution-metric</artifactId>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
 Gradle
 ```groovy
-compile 'eu.hinsch:spring-boot-execution-metric:0.1.1'
+compile 'eu.hinsch:spring-boot-execution-metric:0.2.0'
 ```
 
 ### Use with AOP / Annotations
@@ -29,7 +29,7 @@ compile 'eu.hinsch:spring-boot-execution-metric:0.1.1'
 Expose metric only
 
 ```
-@DurationMetric("some-action")
+@ExecutionMetric("some-action")
 public void someAction() {
     // ...
 }
@@ -38,7 +38,7 @@ public void someAction() {
 With logging
 
 ```
-@DurationMetric(value = "some-action", LogLevel = LogLevel.DEBUG)
+@ExecutionMetric(value = "some-action", LogLevel = LogLevel.DEBUG)
 public void someAction() {
     // ...
 }

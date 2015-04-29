@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DurationMetric {
+public @interface ExecutionMetric {
     String value();
 
     LogLevel loglevel() default LogLevel.OFF;

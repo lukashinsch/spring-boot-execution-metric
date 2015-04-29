@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+- Breaking change: renamed annotation DurationMetric to ExecutionMetric
+- Support annotation on methods that implement interface
+
 ## 0.1.1
 - Annotation support
 
