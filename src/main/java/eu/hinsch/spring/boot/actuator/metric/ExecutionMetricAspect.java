@@ -66,7 +66,8 @@ public class ExecutionMetricAspect {
         ExecutionMetric executionMetric = method.getAnnotation(ExecutionMetric.class);
         if (executionMetric == null && method.getDeclaringClass().isInterface()) {
             final String methodName = signature.getName();
-            final Method implementationMethod = joinPoint.getTarget().getClass().getDeclaredMethod(methodName);
+            final Class<?> implementationClass = joinPoint.getTarget().getClass();
+            final Method implementationMethod = implementationClass.getDeclaredMethod(methodName, method.getParameterTypes());
             executionMetric = implementationMethod.getAnnotation(ExecutionMetric.class);
         }
         return executionMetric;

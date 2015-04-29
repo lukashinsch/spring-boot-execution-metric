@@ -15,13 +15,13 @@ Maven
 <dependency>
     <groupId>eu.hinsch</groupId>
     <artifactId>spring-boot-execution-metric</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
 Gradle
 ```groovy
-compile 'eu.hinsch:spring-boot-execution-metric:0.2.0'
+compile 'eu.hinsch:spring-boot-execution-metric:0.2.1'
 ```
 
 ### Use with AOP / Annotations
