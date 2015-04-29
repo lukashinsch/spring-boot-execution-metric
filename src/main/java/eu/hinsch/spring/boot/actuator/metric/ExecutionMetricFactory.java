@@ -24,16 +24,8 @@ public class ExecutionMetricFactory {
         return new SupplierMetric<>(gaugeService, counterService, name, logger, logLevel);
     }
 
-    public <T> SupplierMetric<T> supplierMetric(String name, Logger logger) {
-        return new SupplierMetric<>(gaugeService, counterService, name, logger);
-    }
-
     public <T> SupplierMetric<T> supplierMetric(String name) {
         return new SupplierMetric<>(gaugeService, counterService, name);
-    }
-
-    public ExecutorMetric executorMetric(String name, Logger logger) {
-        return new ExecutorMetric(gaugeService, counterService, name, logger);
     }
 
     public ExecutorMetric executorMetric(String name, Logger logger, LogLevel logLevel) {

@@ -19,7 +19,7 @@ public abstract class AbstractExecutionMetric {
     private Histogram histogram;
 
     public AbstractExecutionMetric(GaugeService gaugeService, CounterService counterService, String name) {
-        this(gaugeService, counterService, name, null);
+        this(gaugeService, counterService, name, null, LogLevel.OFF);
     }
 
     public AbstractExecutionMetric(GaugeService gaugeService,
@@ -33,13 +33,6 @@ public abstract class AbstractExecutionMetric {
         this.logger = logger;
         this.logLevel = logLevel;
         this.histogram = new Histogram();
-    }
-
-    public AbstractExecutionMetric(GaugeService gaugeService,
-                                   CounterService counterService,
-                                   String name,
-                                   Logger logger) {
-        this(gaugeService, counterService, name, logger, LogLevel.OFF);
     }
 
     protected StopWatch start() {

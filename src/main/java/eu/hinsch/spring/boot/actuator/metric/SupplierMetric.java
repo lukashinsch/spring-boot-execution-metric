@@ -18,13 +18,6 @@ public class SupplierMetric<T> extends AbstractExecutionMetric {
         super(gaugeService, counterService, name);
     }
 
-    public SupplierMetric(final GaugeService gaugeService,
-                          final CounterService counterService,
-                          final String name,
-                          final Logger logger) {
-        super(gaugeService, counterService, name, logger);
-    }
-
     public SupplierMetric(GaugeService gaugeService,
                           CounterService counterService,
                           String name,
