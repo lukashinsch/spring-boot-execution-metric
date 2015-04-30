@@ -37,6 +37,11 @@ public class ExecutionMetricAspectIntegrationTest {
         }
 
         @Bean
+        public TestInterface testBeanWithInterface() {
+            return new TestBeanWithInterface();
+        }
+
+        @Bean
         @Primary
         public CounterService counterService() {
             return Mockito.mock(CounterService.class);
@@ -56,13 +61,21 @@ public class ExecutionMetricAspectIntegrationTest {
         @ExecutionMetric(value = "logged-method", loglevel = LogLevel.INFO)
         public void loggerMethod() {}
 
-//        @Override
-//        @ExecutionMetric("interface-method")
-//        public void interfaceMethod() {}
+    }
+
+    public static class TestBeanWithInterface implements TestInterface {
+
+        @Override
+        @ExecutionMetric("interface-method")
+        public void interfaceMethod() {}
+
     }
 
     @Autowired
     private TestBean testBean;
+
+    @Autowired
+    private TestInterface testBeanWithInterface;
 
     @Autowired
     private CounterService counterService;
@@ -88,13 +101,12 @@ public class ExecutionMetricAspectIntegrationTest {
         assertThat(output.toString(), containsString("IntegrationTest$TestBean : Executing logged-method took"));
     }
 
+    @Test
+    public void shouldMeasureInterfaceMethod() {
+        // when
+        testBeanWithInterface.interfaceMethod();
 
-//    @Test
-//    public void shouldMeasureInterfaceMethod() {
-//        // when
-//        testBean.interfaceMethod();
-//
-//        // then
-//        verify(counterService).increment("interface-method");
-//    }
+        // then
+        verify(counterService).increment("interface-method");
+    }
 }
