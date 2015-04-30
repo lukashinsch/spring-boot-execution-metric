@@ -24,11 +24,6 @@ public class ExecutorMetric extends AbstractExecutionMetric {
         super(gaugeService, counterService, name, logger, logLevel);
     }
 
-    public ExecutorMetric(final GaugeService gaugeService,
-                          final CounterService counterService, final String name, final Logger logger) {
-        super(gaugeService, counterService, name, logger);
-    }
-
     public void measure(Runnable runnable) {
         final StopWatch stopWatch = start();
         runnable.run();
