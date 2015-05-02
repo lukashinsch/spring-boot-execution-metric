@@ -43,6 +43,7 @@ public void someAction() {
     // ...
 }
 ```
+The logger will automatically taken from the (implementation) class of the annotated method.
 
 ### Programatic invocation
 
