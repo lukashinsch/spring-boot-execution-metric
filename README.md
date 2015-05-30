@@ -65,7 +65,7 @@ SomeValue myValue = supplierMetric.measure(() -> getSomeValue());
    
 ```
 
-The code above will expse the following spring boot actuator metrics entries:
+The code above will expose the following spring boot actuator metrics entries:
 
 ```
 gauge.<name>.last = <last call duration>
