@@ -16,7 +16,7 @@ apply plugin: 'idea'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
-version = '0.2.1'
+version = '0.2.2'
 group = 'eu.hinsch'
 
 jar {

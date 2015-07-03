@@ -41,14 +41,19 @@ public class ExecutionMetricAspect {
         SupplierMetric<Object> supplierMetric = store.computeIfAbsent(metricName,
                 (name) -> factory.supplierMetric(name, targetLogger, executionMetric.loglevel()));
 
-        return supplierMetric.measure(() -> {
-            try {
-                return joinPoint.proceed();
-            } catch (Throwable throwable) {
-                throw new RuntimeException("error invoking method", throwable);
-            }
-        });
-
+        // TODO clean up exception handling
+        try {
+            return supplierMetric.measure(() -> {
+                try {
+                    return joinPoint.proceed();
+                } catch (Throwable throwable) {
+                    throw new WrapperException(throwable);
+                }
+            });
+        }
+        catch (WrapperException e) {
+            throw e.getCause();
+        }
     }
 
     private Class getClassForLogger(ProceedingJoinPoint joinPoint) throws Exception {
@@ -71,5 +76,11 @@ public class ExecutionMetricAspect {
             executionMetric = implementationMethod.getAnnotation(ExecutionMetric.class);
         }
         return executionMetric;
+    }
+
+    private static class WrapperException extends RuntimeException {
+        public WrapperException(Throwable t) {
+            super(t);
+        }
     }
 }
