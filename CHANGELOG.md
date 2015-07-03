@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.2
+- Don't wrap exceptions thrown inside measured code (closes gh-7)
+
 ## 0.2.1
 - Fix autoconfig
 - Fix finding implementation method by including parameter types

@@ -2,6 +2,7 @@ package eu.hinsch.spring.boot.actuator.metric;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ import static org.mockito.Mockito.verify;
 @SpringApplicationConfiguration(classes = ExecutionMetricAspectIntegrationTest.TestConfig.class)
 @DirtiesContext
 public class ExecutionMetricAspectIntegrationTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Configuration
     @EnableAutoConfiguration
@@ -60,6 +64,11 @@ public class ExecutionMetricAspectIntegrationTest {
 
         @ExecutionMetric(value = "logged-method", loglevel = LogLevel.INFO)
         public void loggerMethod() {}
+
+        @ExecutionMetric("errorMethod")
+        public void errorMethod() {
+            throw new RuntimeException("test exception");
+        }
 
     }
 
@@ -108,5 +117,17 @@ public class ExecutionMetricAspectIntegrationTest {
 
         // then
         verify(counterService).increment("interface-method");
+    }
+
+    @Test
+    public void shouldPassThroughException() {
+        // given
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage("test exception");
+
+        // when
+        testBean.errorMethod();
+
+        // then -> exception
     }
 }
