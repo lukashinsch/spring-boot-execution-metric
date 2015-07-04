@@ -24,7 +24,7 @@ import static java.util.Arrays.asList;
 @Aspect
 public class ExecutionMetricAspect {
 
-    private Map<String, SupplierMetric<Object>> store = new ConcurrentHashMap<>();
+    private Map<String, ThrowingSupplierMetric<Object>> store = new ConcurrentHashMap<>();
     private final ExecutionMetricFactory factory;
 
     @Autowired
@@ -38,22 +38,10 @@ public class ExecutionMetricAspect {
         Logger targetLogger = LoggerFactory.getLogger(getClassForLogger(joinPoint));
         String metricName = executionMetric.value();
 
-        SupplierMetric<Object> supplierMetric = store.computeIfAbsent(metricName,
-                (name) -> factory.supplierMetric(name, targetLogger, executionMetric.loglevel()));
+        ThrowingSupplierMetric<Object> supplierMetric = store.computeIfAbsent(metricName,
+                (name) -> factory.throwingSupplierMetric(name, targetLogger, executionMetric.loglevel()));
 
-        // TODO clean up exception handling
-        try {
-            return supplierMetric.measure(() -> {
-                try {
-                    return joinPoint.proceed();
-                } catch (Throwable throwable) {
-                    throw new WrapperException(throwable);
-                }
-            });
-        }
-        catch (WrapperException e) {
-            throw e.getCause();
-        }
+        return supplierMetric.measure(joinPoint::proceed);
     }
 
     private Class getClassForLogger(ProceedingJoinPoint joinPoint) throws Exception {
@@ -76,11 +64,5 @@ public class ExecutionMetricAspect {
             executionMetric = implementationMethod.getAnnotation(ExecutionMetric.class);
         }
         return executionMetric;
-    }
-
-    private static class WrapperException extends RuntimeException {
-        public WrapperException(Throwable t) {
-            super(t);
-        }
     }
 }

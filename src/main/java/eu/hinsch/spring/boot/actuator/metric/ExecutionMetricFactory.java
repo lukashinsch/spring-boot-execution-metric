@@ -28,6 +28,14 @@ public class ExecutionMetricFactory {
         return new SupplierMetric<>(gaugeService, counterService, name);
     }
 
+    public <T> ThrowingSupplierMetric<T> throwingSupplierMetric(String name, Logger logger, LogLevel logLevel) {
+        return new ThrowingSupplierMetric<>(gaugeService, counterService, name, logger, logLevel);
+    }
+
+    public <T> ThrowingSupplierMetric<T> throwingSupplierMetric(String name) {
+        return new ThrowingSupplierMetric<>(gaugeService, counterService, name);
+    }
+
     public ExecutorMetric executorMetric(String name, Logger logger, LogLevel logLevel) {
         return new ExecutorMetric(gaugeService, counterService, name, logger, logLevel);
     }
